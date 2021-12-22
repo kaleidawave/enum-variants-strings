@@ -1,1 +1,1 @@
-C:/Users/bwebb/Documents/Projects/rust-stuff/enum-variants-strings/enum-variants-strings/README.md
+./enum-variants-strings/README.md

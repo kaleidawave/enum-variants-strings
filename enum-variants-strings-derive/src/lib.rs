@@ -122,6 +122,8 @@ pub fn enum_variants_strings(input: TokenStream) -> TokenStream {
             Vec::<Arm>::with_capacity(r#enum.variants.len()),
             Vec::<Arm>::with_capacity(r#enum.variants.len()),
         );
+        let mut possible_matches = Vec::<String>::new();
+
         for variant in r#enum.variants.iter() {
             // A list of LitStr which match the variant
             let variant_names = if let Some(attr) = variant
@@ -171,11 +173,15 @@ pub fn enum_variants_strings(input: TokenStream) -> TokenStream {
                 syn::Fields::Unit => quote!( Self::#variant_name ),
             };
 
-            let last_str = variant_names.clone().last().unwrap();
+            possible_matches.extend(
+                variant_names
+                    .clone()
+                    .into_iter()
+                    .map(|lit_str| lit_str.value()),
+            );
 
-            from_string_arms.push(parse_quote! {
-                #(#variant_names)|* => Ok(#variant_default_body)
-            });
+            // If multiple output names use last
+            let last_str = variant_names.clone().last().unwrap();
 
             let to_string_pattern = match &variant.fields {
                 syn::Fields::Named(_) => {
@@ -190,14 +196,18 @@ pub fn enum_variants_strings(input: TokenStream) -> TokenStream {
             to_string_arms.push(parse_quote! {
                 #to_string_pattern => #last_str
             });
+
+            from_string_arms.push(parse_quote! {
+                #(#variant_names)|* => Ok(#variant_default_body)
+            });
         }
 
         (quote! {
             impl ::enum_variants_strings::EnumVariantsStrings for #ident {
-                fn from_str(input: &str) -> Result<Self, ()> {
+                fn from_str(input: &str) -> Result<Self, &[&str]> {
                     match input {
                         #(#from_string_arms),*,
-                        _ => Err(())
+                        _ => Err(&[#(#possible_matches),*])
                     }
                 }
 

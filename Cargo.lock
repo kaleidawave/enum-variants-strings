@@ -29,14 +29,14 @@ checksum = "4c91ae510829160d5cfb19eb4ae7b6e01d44b767ca8f727c6cee936e53cc9ae5"
 
 [[package]]
 name = "enum-variants-strings"
-version = "0.0.0"
+version = "0.1.0"
 dependencies = [
  "enum-variants-strings-derive",
 ]
 
 [[package]]
 name = "enum-variants-strings-derive"
-version = "0.0.0"
+version = "0.1.0"
 dependencies = [
  "Inflector",
  "either_n",

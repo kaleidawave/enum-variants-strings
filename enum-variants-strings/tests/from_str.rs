@@ -31,3 +31,11 @@ fn from() {
 fn err() {
     assert!(Variants::from_str("bad").is_err());
 }
+
+#[test]
+fn show_valid_variant_names() {
+    assert_eq!(
+        Variants::from_str("bad"),
+        Err(&["x", "y", "z", "zee", "hello_world"][..])
+    );
+}

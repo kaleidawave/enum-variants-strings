@@ -1,6 +1,7 @@
 # Enum variants strings
 
-![https://crates.io/crates/enum-variants-strings](https://img.shields.io/crates/v/enum-variants-strings)
+[![Docs](https://docs.rs/enum-variants-strings/badge.svg)](https://docs.rs/enum-variants-strings/)
+[![Crates](https://crates.io/crates/enum-variants-strings)](https://img.shields.io/crates/v/enum-variants-strings)
 
 Generates conversions of enums from strings and into strings based on variant identifiers
 

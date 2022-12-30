@@ -60,7 +60,6 @@ impl Transform {
                         string.extend(ch.to_lowercase());
                     } else {
                         string.push(ch);
-
                     }
                 }
                 string
@@ -76,6 +75,7 @@ struct UnknownCustomTransform<'a> {
     transform: &'a str,
 }
 
+#[allow(clippy::from_over_into)]
 impl<'a> Into<TokenStream> for UnknownCustomTransform<'a> {
     fn into(self) -> TokenStream {
         let message = format!("Unknown transform '{}'", self.transform);

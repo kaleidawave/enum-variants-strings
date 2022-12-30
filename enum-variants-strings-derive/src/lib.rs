@@ -1,7 +1,6 @@
 use std::iter;
 
 use either_n::Either2;
-use inflector::cases::snakecase::to_snake_case;
 use proc_macro::TokenStream;
 use proc_macro2::Span;
 use quote::quote;
@@ -50,7 +49,22 @@ impl Transform {
 
     pub(crate) fn apply_transform(&self, s: &str) -> String {
         match self {
-            Transform::SnakeCase => to_snake_case(s),
+            Transform::SnakeCase => {
+                let mut string = String::new();
+                for ch in s.chars() {
+                    let is_divider = ch.is_uppercase() || ch.is_numeric();
+                    if is_divider {
+                        if !string.is_empty() {
+                            string.push('_');
+                        }
+                        string.extend(ch.to_lowercase());
+                    } else {
+                        string.push(ch);
+
+                    }
+                }
+                string
+            }
             Transform::UpperCase => s.to_uppercase(),
             Transform::LowerCase => s.to_lowercase(),
             Transform::None => s.to_owned(),
@@ -202,7 +216,7 @@ pub fn enum_variants_strings(input: TokenStream) -> TokenStream {
             });
         }
 
-        (quote! {
+        quote! {
             impl ::enum_variants_strings::EnumVariantsStrings for #ident {
                 fn from_str(input: &str) -> Result<Self, &[&str]> {
                     match input {
@@ -217,12 +231,12 @@ pub fn enum_variants_strings(input: TokenStream) -> TokenStream {
                     }
                 }
             }
-        })
+        }
         .into()
     } else {
-        quote!(compile_error!(
-            "Can only implement 'EnumVariantsStrings' on a enum"
-        );)
+        quote!(
+            compile_error!("Can only implement 'EnumVariantsStrings' on a enum");
+        )
         .into()
     }
 }

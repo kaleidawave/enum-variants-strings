@@ -10,4 +10,4 @@ repository = "https://github.com/kaleidawave/enum-variants-strings"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-enum-variants-strings-derive = { version = "0.1.0", path = "../enum-variants-strings-derive" }
+enum-variants-strings-derive = { version = "0.2.1", path = "../enum-variants-strings-derive" }

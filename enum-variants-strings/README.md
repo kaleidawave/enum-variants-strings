@@ -1,4 +1,4 @@
-# Enum variants strings
+# Enum Variants Strings
 
 [![Crates](https://img.shields.io/crates/v/enum-variants-strings)](https://crates.io/crates/enum-variants-strings)
 [![Docs](https://docs.rs/enum-variants-strings/badge.svg)](https://docs.rs/enum-variants-strings/)
@@ -49,6 +49,8 @@ fn main() {
 This can be changed via `#[enum_variants_strings_transform(transform = ...)]`
 
 ```rust
+use enum_variants_strings::EnumVariantsStrings;
+
 #[derive(Debug, PartialEq, EnumVariantsStrings)]
 #[enum_variants_strings_transform(transform = "none")]
 enum EnumA {
@@ -59,7 +61,8 @@ enum EnumA {
 
 There are several transforms
 
-- `"none"`, no mapping from source
+- `"snake_case"`, separate uppercase and numeric boundaries with `_` (default)
+- `"kebab_case"`, snake case with `-` instead of underscores
 - `"upper_case"`, uppercase of identifier in source
 - `"lower_case"`, lowercase of identifier in source
-- `"snake_case"`, (default)
+- `"none"`, no mapping from the identifier in the source

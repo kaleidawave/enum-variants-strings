@@ -1,1 +1,1 @@
-Derive crate for https://crates.io/crates/enum-variants-strings
+Derive crate for [enum-variants-strings](https://crates.io/crates/enum-variants-strings)

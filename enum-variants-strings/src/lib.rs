@@ -1,3 +1,5 @@
+#![doc = include_str!("../README.md")]
+
 pub use enum_variants_strings_derive::EnumVariantsStrings;
 
 pub trait EnumVariantsStrings: Sized {

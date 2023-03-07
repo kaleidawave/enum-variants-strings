@@ -1,3 +1,5 @@
+#![doc = include_str!("../README.md")]
+
 use std::iter;
 
 use either_n::Either2;
@@ -25,6 +27,7 @@ enum Transform {
     SnakeCase,
     UpperCase,
     LowerCase,
+    KebabCase,
     None,
 }
 
@@ -35,31 +38,43 @@ impl Default for Transform {
 }
 
 /// Ironically this is what this proc macro should generate
-/// TODO can this crate be used in self hosting way?
 impl Transform {
-    pub(crate) fn from_str(s: &str) -> Result<Self, UnknownCustomTransform> {
+    pub(crate) fn from_str(s: &str) -> Result<Self, UnknownCustomTransformError> {
         match s {
             "snake_case" => Ok(Self::SnakeCase),
             "upper_case" => Ok(Self::UpperCase),
             "lower_case" => Ok(Self::LowerCase),
+            "kebab_case" => Ok(Self::KebabCase),
             "none" => Ok(Self::None),
-            s => Err(UnknownCustomTransform { transform: s }),
+            s => Err(UnknownCustomTransformError { transform: s }),
         }
     }
 
     pub(crate) fn apply_transform(&self, s: &str) -> String {
         match self {
-            Transform::SnakeCase => {
+            Transform::SnakeCase | Transform::KebabCase => {
+                let mut peekable = s.chars().peekable();
                 let mut string = String::new();
-                for ch in s.chars() {
-                    let is_divider = ch.is_uppercase() || ch.is_numeric();
-                    if is_divider {
-                        if !string.is_empty() {
-                            string.push('_');
-                        }
-                        string.extend(ch.to_lowercase());
-                    } else {
-                        string.push(ch);
+                let divider = if matches!(self, Transform::SnakeCase) {
+                    '_'
+                } else {
+                    '-'
+                };
+                while let Some(character) = peekable.next() {
+                    if let '_' | '-' = character {
+                        string.push(divider);
+                        continue;
+                    }
+
+                    string.extend(character.to_lowercase());
+                    if character.is_lowercase()
+                        && peekable
+                            .peek()
+                            .copied()
+                            .map(|c| c.is_uppercase() || c.is_numeric())
+                            .unwrap_or(false)
+                    {
+                        string.push(divider);
                     }
                 }
                 string
@@ -71,12 +86,12 @@ impl Transform {
     }
 }
 
-struct UnknownCustomTransform<'a> {
+struct UnknownCustomTransformError<'a> {
     transform: &'a str,
 }
 
 #[allow(clippy::from_over_into)]
-impl<'a> Into<TokenStream> for UnknownCustomTransform<'a> {
+impl<'a> Into<TokenStream> for UnknownCustomTransformError<'a> {
     fn into(self) -> TokenStream {
         let message = format!("Unknown transform '{}'", self.transform);
         quote!(compile_error!(#message)).into()
@@ -238,5 +253,34 @@ pub fn enum_variants_strings(input: TokenStream) -> TokenStream {
             compile_error!("Can only implement 'EnumVariantsStrings' on a enum");
         )
         .into()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Transform;
+
+    #[test]
+    fn snake_case_test() {
+        let transform = Transform::SnakeCase;
+        assert_eq!(&transform.apply_transform("SomeStruct"), "some_struct");
+        assert_eq!(&transform.apply_transform("SomeTLA"), "some_tla");
+        assert_eq!(
+            &transform.apply_transform("Member_With_underscore"),
+            "member_with_underscore"
+        );
+        assert_eq!(&transform.apply_transform("Field6"), "field_6");
+    }
+
+    #[test]
+    fn kebab_case_test() {
+        let transform = Transform::KebabCase;
+        assert_eq!(&transform.apply_transform("SomeStruct"), "some-struct");
+        assert_eq!(&transform.apply_transform("SomeTLA"), "some-tla");
+        assert_eq!(
+            &transform.apply_transform("Member_With_underscore"),
+            "member-with-underscore"
+        );
+        assert_eq!(&transform.apply_transform("Field6"), "field-6");
     }
 }

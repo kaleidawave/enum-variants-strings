@@ -2,7 +2,7 @@
 name = "enum-variants-strings-derive"
 authors = [ "Ben <kaleidawave@gmail.com>" ]
 description = "Derive macro for converting instances of enums to and from strs using variant names"
-version = "0.2.1"
+version = "0.2.2"
 license = "MIT"
 edition = "2021"
 repository = "https://github.com/kaleidawave/enum-variants-strings"

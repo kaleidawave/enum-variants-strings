@@ -2,7 +2,7 @@
 name = "enum-variants-strings"
 authors = [ "Ben <kaleidawave@gmail.com>" ]
 description = "Derive macro for converting instances of enums to and from strs using variant names"
-version = "0.2.1"
+version = "0.2.2"
 license = "MIT"
 edition = "2021"
 repository = "https://github.com/kaleidawave/enum-variants-strings"
@@ -10,4 +10,4 @@ repository = "https://github.com/kaleidawave/enum-variants-strings"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-enum-variants-strings-derive = { version = "0.2.1", path = "../enum-variants-strings-derive" }
+enum-variants-strings-derive = { version = "0.2.2", path = "../enum-variants-strings-derive" }

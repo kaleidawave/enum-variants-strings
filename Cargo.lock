@@ -17,7 +17,7 @@ dependencies = [
 
 [[package]]
 name = "enum-variants-strings-derive"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "either_n",
  "proc-macro2",

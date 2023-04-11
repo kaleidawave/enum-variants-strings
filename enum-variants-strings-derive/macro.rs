@@ -24,19 +24,14 @@ const CUSTOM_VARIANT_STRING_MAPPING: &str = "enum_variants_strings_mappings";
 /// For specifying the custom transform
 const CUSTOM_VARIANT_STRING_TRANSFORM: &str = "enum_variants_strings_transform";
 
-// TODO pascal case
+#[derive(Default)]
 enum Transform {
+    #[default]
     SnakeCase,
     UpperCase,
     LowerCase,
     KebabCase,
     None,
-}
-
-impl Default for Transform {
-    fn default() -> Self {
-        Transform::SnakeCase
-    }
 }
 
 /// Ironically this is what this proc macro should generate
@@ -179,12 +174,7 @@ pub fn enum_variants_strings(input: TokenStream) -> TokenStream {
                 syn::Fields::Unit => quote!( Self::#variant_name ),
             };
 
-            possible_matches.extend(
-                variant_names
-                    .clone()
-                    .into_iter()
-                    .map(|lit_str| lit_str.value()),
-            );
+            possible_matches.extend(variant_names.clone().map(|lit_str| lit_str.value()));
 
             // If multiple output names use last
             let last_str = variant_names.clone().last().unwrap();

@@ -5,7 +5,6 @@ description = "Derive macro for converting instances of enums to and from strs u
 version = "0.2.2"
 license = "MIT"
 edition = "2021"
-readme = "../README.md"
 repository = "https://github.com/kaleidawave/enum-variants-strings"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -14,4 +13,4 @@ repository = "https://github.com/kaleidawave/enum-variants-strings"
 path = "lib.rs"
 
 [dependencies]
-enum-variants-strings-derive = { version = "0.2.2", path = "../enum-variants-strings-derive" }
+enum-variants-strings-derive = { version = "0.2.3", path = "../enum-variants-strings-derive" }

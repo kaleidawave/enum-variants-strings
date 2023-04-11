@@ -10,18 +10,19 @@ checksum = "4c91ae510829160d5cfb19eb4ae7b6e01d44b767ca8f727c6cee936e53cc9ae5"
 
 [[package]]
 name = "enum-variants-strings"
-version = "0.2.0"
+version = "0.2.2"
 dependencies = [
  "enum-variants-strings-derive",
 ]
 
 [[package]]
 name = "enum-variants-strings-derive"
-version = "0.2.1"
+version = "0.2.2"
 dependencies = [
  "either_n",
  "proc-macro2",
  "quote",
+ "string-cases",
  "syn",
 ]
 
@@ -42,6 +43,12 @@ checksum = "38bc8cc6a5f2e3655e0899c1b848643b2562f853f114bfec7be120678e3ace05"
 dependencies = [
  "proc-macro2",
 ]
+
+[[package]]
+name = "string-cases"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a31d23461f9e0fbe756cf9d5a36be93740fe12c8b094409a5f78f0f912ee2b6f"
 
 [[package]]
 name = "syn"

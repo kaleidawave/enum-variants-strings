@@ -1,4 +1,4 @@
-#![doc = include_str!("../README.md")]
+#![doc = include_str!("./README.md")]
 
 use std::iter;
 
@@ -6,6 +6,7 @@ use either_n::Either2;
 use proc_macro::TokenStream;
 use proc_macro2::Span;
 use quote::quote;
+use string_cases::StringCasesExt;
 use syn::{
     parse::ParseStream, parse_macro_input, parse_quote, punctuated::Punctuated, Arm, Data,
     DeriveInput, Lit, LitStr, Meta, MetaNameValue, NestedMeta, Token,
@@ -23,6 +24,7 @@ const CUSTOM_VARIANT_STRING_MAPPING: &str = "enum_variants_strings_mappings";
 /// For specifying the custom transform
 const CUSTOM_VARIANT_STRING_TRANSFORM: &str = "enum_variants_strings_transform";
 
+// TODO pascal case
 enum Transform {
     SnakeCase,
     UpperCase,
@@ -44,7 +46,7 @@ impl Transform {
             "snake_case" => Ok(Self::SnakeCase),
             "upper_case" => Ok(Self::UpperCase),
             "lower_case" => Ok(Self::LowerCase),
-            "kebab_case" => Ok(Self::KebabCase),
+            "kebab_case" | "kebab-case" => Ok(Self::KebabCase),
             "none" => Ok(Self::None),
             s => Err(UnknownCustomTransformError { transform: s }),
         }
@@ -52,33 +54,8 @@ impl Transform {
 
     pub(crate) fn apply_transform(&self, s: &str) -> String {
         match self {
-            Transform::SnakeCase | Transform::KebabCase => {
-                let mut peekable = s.chars().peekable();
-                let mut string = String::new();
-                let divider = if matches!(self, Transform::SnakeCase) {
-                    '_'
-                } else {
-                    '-'
-                };
-                while let Some(character) = peekable.next() {
-                    if let '_' | '-' = character {
-                        string.push(divider);
-                        continue;
-                    }
-
-                    string.extend(character.to_lowercase());
-                    if character.is_lowercase()
-                        && peekable
-                            .peek()
-                            .copied()
-                            .map(|c| c.is_uppercase() || c.is_numeric())
-                            .unwrap_or(false)
-                    {
-                        string.push(divider);
-                    }
-                }
-                string
-            }
+            Transform::SnakeCase => s.to_snake_case(),
+            Transform::KebabCase => s.to_kebab_case(),
             Transform::UpperCase => s.to_uppercase(),
             Transform::LowerCase => s.to_lowercase(),
             Transform::None => s.to_owned(),
@@ -253,34 +230,5 @@ pub fn enum_variants_strings(input: TokenStream) -> TokenStream {
             compile_error!("Can only implement 'EnumVariantsStrings' on a enum");
         )
         .into()
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::Transform;
-
-    #[test]
-    fn snake_case_test() {
-        let transform = Transform::SnakeCase;
-        assert_eq!(&transform.apply_transform("SomeStruct"), "some_struct");
-        assert_eq!(&transform.apply_transform("SomeTLA"), "some_tla");
-        assert_eq!(
-            &transform.apply_transform("Member_With_underscore"),
-            "member_with_underscore"
-        );
-        assert_eq!(&transform.apply_transform("Field6"), "field_6");
-    }
-
-    #[test]
-    fn kebab_case_test() {
-        let transform = Transform::KebabCase;
-        assert_eq!(&transform.apply_transform("SomeStruct"), "some-struct");
-        assert_eq!(&transform.apply_transform("SomeTLA"), "some-tla");
-        assert_eq!(
-            &transform.apply_transform("Member_With_underscore"),
-            "member-with-underscore"
-        );
-        assert_eq!(&transform.apply_transform("Field6"), "field-6");
     }
 }

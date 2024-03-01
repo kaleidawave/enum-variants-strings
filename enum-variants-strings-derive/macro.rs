@@ -9,7 +9,7 @@ use quote::quote;
 use string_cases::StringCasesExt;
 use syn::{
     parse::ParseStream, parse_macro_input, parse_quote, punctuated::Punctuated, Arm, Data,
-    DeriveInput, Lit, LitStr, Meta, MetaNameValue, NestedMeta, Token,
+    DeriveInput, Expr, ExprLit, Lit, LitStr, Meta, MetaNameValue, Token,
 };
 
 /// Name of the attribute that is used for specifying a mapping other than it snake cased name
@@ -81,18 +81,21 @@ pub fn enum_variants_strings(input: TokenStream) -> TokenStream {
         let ident = &input.ident;
 
         let mapping: Option<Result<String, ()>> = input.attrs.iter().find_map(|attr| {
-            attr.path
+            attr.path()
                 .is_ident(CUSTOM_VARIANT_STRING_TRANSFORM)
                 .then(|| {
-                    if let Ok(Meta::List(meta_list)) = attr.parse_meta() {
-                        if let (
-                            1,
-                            Some(NestedMeta::Meta(Meta::NameValue(MetaNameValue {
-                                path,
-                                lit: Lit::Str(lit_str),
-                                ..
-                            }))),
-                        ) = (meta_list.nested.len(), meta_list.nested.first())
+                    if let Meta::List(ref meta_list) = attr.meta {
+                        let inner = meta_list.parse_args::<MetaNameValue>();
+
+                        if let Ok(MetaNameValue {
+                            path,
+                            value:
+                                Expr::Lit(ExprLit {
+                                    lit: Lit::Str(lit_str),
+                                    ..
+                                }),
+                            ..
+                        }) = inner
                         {
                             if path.is_ident("transform") {
                                 return Ok(lit_str.value());
@@ -130,10 +133,11 @@ pub fn enum_variants_strings(input: TokenStream) -> TokenStream {
             let variant_names = if let Some(attr) = variant
                 .attrs
                 .iter()
-                .find(|attr| attr.path.is_ident(CUSTOM_VARIANT_STRING_MAPPING))
+                .find(|attr| attr.path().is_ident(CUSTOM_VARIANT_STRING_MAPPING))
             {
                 let parse_args_result = attr.parse_args_with(|stream: ParseStream| {
-                    stream.parse_terminated(|stream: ParseStream| stream.parse::<LitStr>())
+                    stream
+                        .parse_terminated(|stream: ParseStream| stream.parse::<LitStr>(), Token![,])
                 });
                 let args: Punctuated<LitStr, Token![,]> = match parse_args_result {
                     Ok(args) => args,

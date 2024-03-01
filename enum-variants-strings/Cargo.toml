@@ -6,6 +6,8 @@ version = "0.2.3"
 license = "MIT"
 edition = "2021"
 repository = "https://github.com/kaleidawave/enum-variants-strings"
+categories = ["rust-patterns"]
+keywords = ["enum", "variants", "string", "derive"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

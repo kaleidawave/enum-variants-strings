@@ -15,7 +15,7 @@ proc-macro = true
 
 [dependencies]
 proc-macro2 = "1.0"
-syn = { version = "1.0.81", features = ["full", "extra-traits"] }
-quote = "1.0.10"
-either_n = "0.2.0"
-string-cases = "0.2.0"
+syn = { version = "2.0", features = ["full", "extra-traits"] }
+quote = "1.0"
+either_n = "0.2"
+string-cases = "0.2"
